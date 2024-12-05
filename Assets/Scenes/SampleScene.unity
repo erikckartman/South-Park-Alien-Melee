@@ -1434,6 +1434,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 1910666915
       objectReference: {fileID: 0}
+    - target: {fileID: 5678214442470856291, guid: 8a089453dc6859c4d86659f4055101ea, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
     - target: {fileID: 6732750448170307664, guid: 8a089453dc6859c4d86659f4055101ea, type: 3}
       propertyPath: m_Name
       value: Kyle

@@ -17,7 +17,7 @@ public class Movement : NetworkBehaviour
 
     public static Vector3 playerPosition { get; private set; }
 
-    private void Update()
+    public override void FixedUpdateNetwork()
     {
         playerPosition = transform.position;
 
@@ -88,5 +88,10 @@ public class Movement : NetworkBehaviour
         transform.position = targetPosition;
         transform.rotation = startRotation;
         isJumping = false;
+    }
+
+    public struct NetworkInputData : INetworkInput
+    {
+        public Vector2 moveDirection;
     }
 }

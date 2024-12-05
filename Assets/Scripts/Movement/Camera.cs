@@ -14,11 +14,6 @@ public class Camera : MonoBehaviour
     private float rotationX = 0f;
     private float rotationY = 0f;
 
-    void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
     void LateUpdate()
     {
         if (target == null) return;
