@@ -16,16 +16,17 @@ public class Camera : MonoBehaviour
 
     void LateUpdate()
     {
-        if (target == null) return;
+        if(target == null)
+        {
+            rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+            rotationY -= Input.GetAxis("Mouse Y") * sensitivityY;
+            rotationY = Mathf.Clamp(rotationY, minY, maxY);
 
-        rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-        rotationY -= Input.GetAxis("Mouse Y") * sensitivityY;
-        rotationY = Mathf.Clamp(rotationY, minY, maxY);
+            Quaternion rotation = Quaternion.Euler(rotationY, rotationX, 0);
+            Vector3 targetPosition = target.position - rotation * Vector3.forward * distance;
 
-        Quaternion rotation = Quaternion.Euler(rotationY, rotationX, 0);
-        Vector3 targetPosition = target.position - rotation * Vector3.forward * distance;
-
-        transform.position = targetPosition;
-        transform.LookAt(target.position);
+            transform.position = targetPosition;
+            transform.LookAt(target.position);
+        }
     }
 }
