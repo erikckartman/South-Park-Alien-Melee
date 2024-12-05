@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Fusion;
 
-public class Movement : MonoBehaviour
+public class Movement : NetworkBehaviour
 {
     [SerializeField] private Transform cameraTransform;
     private float jumpDistance = 2f;  
@@ -41,6 +42,7 @@ public class Movement : MonoBehaviour
         right.Normalize();
 
         Vector3 moveDirection = forward * moveZ + right * moveX;
+        transform.Translate(moveDirection, Space.World);
 
         if (moveDirection != Vector3.zero)
         {
