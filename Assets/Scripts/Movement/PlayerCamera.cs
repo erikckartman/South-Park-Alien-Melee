@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Camera : MonoBehaviour
+public class PlayerCamera : MonoBehaviour
 {
-    [SerializeField]private Transform target; 
+    public Transform target; 
     private float distance = 5.0f;
     private float sensitivityX = 3.0f;
     private float sensitivityY = 1.5f;
@@ -16,7 +16,7 @@ public class Camera : MonoBehaviour
 
     void LateUpdate()
     {
-        if(target == null)
+        if(target != null)
         {
             rotationX += Input.GetAxis("Mouse X") * sensitivityX;
             rotationY -= Input.GetAxis("Mouse Y") * sensitivityY;

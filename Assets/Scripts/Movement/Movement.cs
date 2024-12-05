@@ -21,34 +21,32 @@ public class Movement : NetworkBehaviour
     {
         playerPosition = transform.position;
 
-        if (!isJumping)
+        if (Object.HasStateAuthority)
         {
-            MovePlayer();
+            if (!isJumping)
+            {
+                MovePlayer();
+            }
         }
     }
 
     private void MovePlayer()
     {
-       float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
-
-        forward.y = 0;
-        right.y = 0;
-
-        forward.Normalize();
-        right.Normalize();
-
-        Vector3 moveDirection = forward * moveZ + right * moveX;
-        transform.Translate(moveDirection, Space.World);
-
-        if (moveDirection != Vector3.zero)
+        if (GetInput(out NetworkInputData inputData))
         {
-            transform.rotation = Quaternion.LookRotation(moveDirection);
+            Vector3 moveDirection = cameraTransform.forward * inputData.moveDirection.y +
+                                    cameraTransform.right * inputData.moveDirection.x;
 
-            StartCoroutine(Jump(moveDirection));
+            moveDirection.y = 0;
+            moveDirection.Normalize();
+
+            transform.Translate(moveDirection * Time.deltaTime, Space.World);
+
+            if (moveDirection != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(moveDirection);
+                StartCoroutine(Jump(moveDirection));
+            }
         }
     }
 

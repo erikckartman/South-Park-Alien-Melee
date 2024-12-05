@@ -73,10 +73,12 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer || runner.LocalPlayer == player)
         {
-            runner.Spawn(playerPrefab,
-                         new Vector3(0, 5, 0),
-                         Quaternion.identity,
-                         player);
+            var playerObject = runner.Spawn(playerPrefab, new Vector3(0, 5, 0), Quaternion.identity, player);
+
+            if (player == runner.LocalPlayer)
+            {
+                Camera.main.GetComponent<PlayerCamera>().target = playerObject.transform;
+            }
         }
     }
 
