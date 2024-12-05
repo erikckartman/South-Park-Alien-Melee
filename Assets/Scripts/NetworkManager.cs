@@ -10,6 +10,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     private NetworkRunner _runner;
     [SerializeField] private GameObject hostMenu;
+    public GameObject playerPrefab;
 
     public async void Host()
     {
@@ -64,8 +65,14 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSceneLoadStart(NetworkRunner runner) { }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"{player} joined the game");
-    }  
+        if (runner.IsServer || runner.LocalPlayer == player)
+        {
+            runner.Spawn(playerPrefab,
+                         new Vector3(0, 5, 0),
+                         Quaternion.identity,
+                         player);
+        }
+    }
 
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
