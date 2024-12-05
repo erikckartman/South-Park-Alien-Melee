@@ -36,7 +36,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         var result = await _runner.StartGame(new StartGameArgs
         {
-            GameMode = GameMode.Shared,
+            GameMode = GameMode.Client,
             SessionName = "Coon And Friends",
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
         });
@@ -53,9 +53,15 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-    public void OnDisconnectedFromServer(NetworkRunner runner) { }
+    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
+    {
+        Debug.Log($"Disconnect: {reason}");
+    }
     public void OnConnectedToServer(NetworkRunner runner) { }
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
+    {
+        Debug.Log($"Connection failed: {reason}");
+    }
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
     public void OnSessionListUpdated(NetworkRunner runner, System.Collections.Generic.List<SessionInfo> sessionList) { }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
@@ -77,11 +83,6 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
         Debug.Log("Connection requested");
-    }
-
-    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
-    {
-        Debug.Log("Disconnected from server");
     }
 
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject networkObject, PlayerRef player) { }
