@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Fusion;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class PlayerCamera : MonoBehaviour
     private float rotationX = 0f;
     private float rotationY = 0f;
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         if(target != null)
         {
@@ -29,4 +30,6 @@ public class PlayerCamera : MonoBehaviour
             transform.LookAt(target.position);
         }
     }
+
+
 }

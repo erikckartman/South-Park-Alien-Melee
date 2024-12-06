@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6194023624690186829
 Transform:
   m_ObjectHideFlags: 0
@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ff8e450bebea2479451b61ef59b942, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 6194023624690186829}
+  cameraTransform: {fileID: 3029040312286188927}
 --- !u!65 &8956414134618118733
 BoxCollider:
   m_ObjectHideFlags: 0

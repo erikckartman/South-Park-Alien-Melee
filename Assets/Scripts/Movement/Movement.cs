@@ -6,7 +6,7 @@ using Fusion;
 
 public class Movement : NetworkBehaviour
 {
-    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private GameObject cameraTransform;
     private float jumpDistance = 2f;  
     private float jumpHeight = 0.25f;
     private float jumpDuration = 0.2f;
@@ -15,18 +15,34 @@ public class Movement : NetworkBehaviour
     private bool isJumping = false;
     private bool tiltToLeft = true;
 
-    public static Vector3 playerPosition { get; private set; }
+    [Networked]public Vector3 playerPosition { get; private set; }
+
+    public override void Spawned()
+    {
+        if (Object.HasInputAuthority)
+        {
+            cameraTransform.SetActive(true);
+        }
+        else
+        {
+            cameraTransform.SetActive(false);
+        }
+    }
 
     public override void FixedUpdateNetwork()
     {
-        playerPosition = transform.position;
-
         if (Object.HasStateAuthority)
         {
             if (!isJumping)
             {
                 MovePlayer();
             }
+
+            playerPosition = transform.position;
+        }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, playerPosition, Time.deltaTime * 10);
         }
     }
 
@@ -34,8 +50,8 @@ public class Movement : NetworkBehaviour
     {
         if (GetInput(out NetworkInputData inputData))
         {
-            Vector3 moveDirection = cameraTransform.forward * inputData.moveDirection.y +
-                                    cameraTransform.right * inputData.moveDirection.x;
+            Vector3 moveDirection = cameraTransform.transform.forward * inputData.moveDirection.y +
+                                    cameraTransform.transform.right * inputData.moveDirection.x;
 
             moveDirection.y = 0;
             moveDirection.Normalize();
@@ -91,5 +107,17 @@ public class Movement : NetworkBehaviour
     public struct NetworkInputData : INetworkInput
     {
         public Vector2 moveDirection;
+    }
+
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
+        NetworkInputData inputData = new NetworkInputData();
+
+        inputData.moveDirection = new Vector2(
+            Input.GetAxis("Horizontal"),
+            Input.GetAxis("Vertical")
+        );
+
+        input.Set(inputData);
     }
 }
