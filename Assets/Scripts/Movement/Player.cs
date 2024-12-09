@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using Fusion;
+using System;
 
-public class Movement : NetworkBehaviour
+public class Player : NetworkBehaviour
 {
+    [SerializeField] private NetworkTransform networkTransform;
     [SerializeField] private GameObject cameraTransform;
     private float jumpDistance = 2f;  
     private float jumpHeight = 0.25f;
@@ -16,6 +18,7 @@ public class Movement : NetworkBehaviour
     private bool tiltToLeft = true;
 
     [Networked]public Vector3 playerPosition { get; private set; }
+    [Networked]public Quaternion playerQuaterion{ get; private set; }
 
     public override void Spawned()
     {
@@ -39,10 +42,12 @@ public class Movement : NetworkBehaviour
             }
 
             playerPosition = transform.position;
+            playerQuaterion = transform.rotation;
         }
         else
         {
             transform.position = Vector3.Lerp(transform.position, playerPosition, Time.deltaTime * 10);
+            transform.rotation = Quaternion.Lerp(transform.rotation, playerQuaterion, Time.deltaTime * 10);
         }
     }
 
@@ -55,8 +60,6 @@ public class Movement : NetworkBehaviour
 
             moveDirection.y = 0;
             moveDirection.Normalize();
-
-            transform.Translate(moveDirection * Time.deltaTime, Space.World);
 
             if (moveDirection != Vector3.zero)
             {
@@ -71,7 +74,6 @@ public class Movement : NetworkBehaviour
         isJumping = true;
 
         Vector3 startPosition = transform.position;
-
         Vector3 targetPosition = startPosition + direction.normalized * jumpDistance;
 
         Quaternion startRotation = transform.rotation;
@@ -89,18 +91,25 @@ public class Movement : NetworkBehaviour
             float progress = elapsedTime / jumpDuration;
 
             Vector3 currentPosition = Vector3.Lerp(startPosition, targetPosition, progress);
-
             currentPosition.y = startPosition.y + jumpHeight * Mathf.Sin(Mathf.PI * progress);
 
-            transform.rotation = Quaternion.Lerp(startRotation, tiltRotation, Mathf.Sin(Mathf.PI * progress));
+            Quaternion currentRotation = Quaternion.Lerp(startRotation, tiltRotation, Mathf.Sin(Mathf.PI * progress));
 
             transform.position = currentPosition;
+            transform.rotation = currentRotation;
+
+            playerPosition = currentPosition;
+            playerQuaterion = currentRotation;
 
             yield return null;
         }
 
         transform.position = targetPosition;
         transform.rotation = startRotation;
+
+        playerPosition = targetPosition;
+        playerQuaterion = startRotation;
+
         isJumping = false;
     }
 
@@ -111,12 +120,13 @@ public class Movement : NetworkBehaviour
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        NetworkInputData inputData = new NetworkInputData();
-
-        inputData.moveDirection = new Vector2(
-            Input.GetAxis("Horizontal"),
-            Input.GetAxis("Vertical")
-        );
+        NetworkInputData inputData = new NetworkInputData
+        {
+            moveDirection = new Vector2(
+                Input.GetAxis("Horizontal"),
+                Input.GetAxis("Vertical")
+            )
+        };
 
         input.Set(inputData);
     }

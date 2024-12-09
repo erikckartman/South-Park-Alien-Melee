@@ -4,14 +4,14 @@ using UnityEngine;
 using Fusion;
 using Fusion.Sockets;
 using System;
-using static Movement;
+using static Player;
 
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     private NetworkRunner _runner;
     [SerializeField] private GameObject hostMenu;
     public GameObject playerPrefab;
-
+ 
     public async void Host()
     {
         hostMenu.SetActive(false);
@@ -77,6 +77,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer || runner.LocalPlayer == player)
         {
             var playerObject = runner.Spawn(playerPrefab, new Vector3(0, 5, 0), Quaternion.identity, player);
+            
+            Player playerElement = playerObject.GetComponent<Player>();
 
             if (player == runner.LocalPlayer)
             {

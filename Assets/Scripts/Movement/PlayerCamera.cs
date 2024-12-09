@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 
-public class PlayerCamera : MonoBehaviour
+public class PlayerCamera : NetworkBehaviour
 {
     public Transform target; 
     private float distance = 5.0f;
@@ -15,21 +15,42 @@ public class PlayerCamera : MonoBehaviour
     private float rotationX = 0f;
     private float rotationY = 0f;
 
-    private void LateUpdate()
+    [Networked] private float networkRotationX { get; set; }
+    [Networked] private float networkRotationY { get; set; }
+
+    public override void FixedUpdateNetwork()
     {
-        if(target != null)
+        if (Object.HasInputAuthority && target != null)
         {
-            rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-            rotationY -= Input.GetAxis("Mouse Y") * sensitivityY;
-            rotationY = Mathf.Clamp(rotationY, minY, maxY);
+            HandleCameraInput();
+            networkRotationX = rotationX;
+            networkRotationY = rotationY;
+        }
+        else if (target != null)
+        {
+            rotationX = Mathf.Lerp(rotationX, networkRotationX, Time.deltaTime * 10);
+            rotationY = Mathf.Lerp(rotationY, networkRotationY, Time.deltaTime * 10);
+        }
 
-            Quaternion rotation = Quaternion.Euler(rotationY, rotationX, 0);
-            Vector3 targetPosition = target.position - rotation * Vector3.forward * distance;
-
-            transform.position = targetPosition;
-            transform.LookAt(target.position);
+        if (target != null)
+        {
+            UpdateCameraPosition();
         }
     }
 
+    private void HandleCameraInput()
+    {
+        rotationX += Input.GetAxis("Mouse X") * sensitivityX;
+        rotationY -= Input.GetAxis("Mouse Y") * sensitivityY;
+        rotationY = Mathf.Clamp(rotationY, minY, maxY);
+    }
 
+    private void UpdateCameraPosition()
+    {
+        Quaternion rotation = Quaternion.Euler(rotationY, rotationX, 0);
+        Vector3 targetPosition = target.position - rotation * Vector3.forward * distance;
+
+        transform.position = targetPosition;
+        transform.LookAt(target.position);
+    }
 }

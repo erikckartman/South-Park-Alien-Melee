@@ -206,7 +206,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ff8e450bebea2479451b61ef59b942, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkTransform: {fileID: 0}
   cameraTransform: {fileID: 3029040312286188927}
+  enemy: {fileID: 4124419684439804235, guid: 4b96688b6cb2a3848b6912e52381dcd4, type: 3}
+  _playerPosition: {x: 0, y: 0, z: 0}
+  _playerQuaterion: {x: 0, y: 0, z: 0, w: 0}
 --- !u!65 &8956414134618118733
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -273,3 +277,4 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2338672167028906882}
+  - {fileID: 1110106483382620300}
