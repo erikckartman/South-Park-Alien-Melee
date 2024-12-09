@@ -1,20 +1,42 @@
-﻿using UnityEngine;
+﻿using Fusion;
+using System.Globalization;
+using TMPro;
+using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : NetworkBehaviour
 {
-    private NavMeshAgent agent;
+    [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private bool canGo = false;
     private Transform playerTransform;
     private float detectionRange = 10f;
     private float rotationSpeed = 5f;
     public Player[] players;
 
-    private void Start()
+    [Networked] private Vector3 TargedPosition { get; set; }
+
+    public void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        if (Runner.IsServer)
+        {
+            agent.enabled = false;
+            SearchForPlayers();
+        }
     }
 
-    private void Update()
+    public void Update()
+    {
+        if (Runner.IsServer)
+        {
+            UpdateEnemy();
+        }
+        else
+        {
+            FollowTarget();
+        }
+    }
+
+    private void UpdateEnemy()
     {
         if (players != null && players.Length > 0)
         {
@@ -30,7 +52,7 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (playerTransform != null)
+        if (playerTransform != null && canGo)
         {
             agent.SetDestination(playerTransform.position);
             float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
@@ -38,8 +60,24 @@ public class Enemy : MonoBehaviour
             RotateTowardsPlayer();
         }
     }
+
+    private void FollowTarget()
+    {
+        if (playerTransform.position != Vector3.zero && canGo)
+        {
+            agent.SetDestination(playerTransform.position);
+        }
+    }
+
+    private void SearchForPlayers()
+    {
+        players = FindObjectsOfType<Player>();
+    }
+
     private void RotateTowardsPlayer()
     {
+        if (playerTransform == null) return;
+
         Vector3 direction = (playerTransform.position - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
@@ -49,7 +87,13 @@ public class Enemy : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            Destroy(collision.gameObject);
+            return;
+        }
+
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            agent.enabled = true;
+            canGo = true;
         }
     }
 
@@ -70,10 +114,5 @@ public class Enemy : MonoBehaviour
         }
 
         return nearestPlayer;
-    }
-
-    public void SearchForPlayers()
-    {
-        players = FindObjectsOfType<Player>();
     }
 }

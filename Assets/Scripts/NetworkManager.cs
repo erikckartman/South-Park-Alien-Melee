@@ -15,6 +15,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public async void Host()
     {
         hostMenu.SetActive(false);
+        Spawner.canSpawnEnemies = true;
 
         _runner = GetComponent<NetworkRunner>();
         _runner.ProvideInput = true;
