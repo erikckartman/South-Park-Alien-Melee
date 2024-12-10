@@ -145,7 +145,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 900fb609eb2827c469e857f3f9710101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runner: {fileID: 0}
   agent: {fileID: 7747827953450364377}
   canGo: 0
   players: []

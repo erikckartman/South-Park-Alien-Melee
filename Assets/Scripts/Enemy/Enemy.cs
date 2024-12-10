@@ -13,7 +13,10 @@ public class Enemy : NetworkBehaviour
     private float rotationSpeed = 5f;
     public Player[] players;
 
+    [Networked] private Vector3 EnemyPosition { get; set; }
+    [Networked] private Vector3 EnemyVelocity { get; set; }
     [Networked] private Vector3 TargedPosition { get; set; }
+    private Vector3 targetPosition;
 
     public void Start()
     {
@@ -26,13 +29,22 @@ public class Enemy : NetworkBehaviour
 
     public void Update()
     {
-        if (Runner.IsServer)
+        if (!Object.HasStateAuthority)
+        {
+            targetPosition = EnemyPosition;
+            transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 5);
+        }
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (Object.HasStateAuthority)
         {
             UpdateEnemy();
         }
         else
         {
-            FollowTarget();
+            transform.position = EnemyPosition;
         }
     }
 
@@ -45,6 +57,7 @@ public class Enemy : NetworkBehaviour
             if (nearestPlayer != null)
             {
                 playerTransform = nearestPlayer.transform;
+
             }
             else
             {
@@ -54,8 +67,11 @@ public class Enemy : NetworkBehaviour
 
         if (playerTransform != null && canGo)
         {
-            agent.SetDestination(playerTransform.position);
-            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+            Vector3 direction = (playerTransform.position - transform.position).normalized;
+            EnemyVelocity = direction * 3f;
+
+            EnemyPosition = transform.position + EnemyVelocity * Runner.DeltaTime;
+            transform.position = EnemyPosition;
 
             RotateTowardsPlayer();
         }

@@ -16,6 +16,7 @@ public class Spawner : MonoBehaviour
 
     [SerializeField] private Vector2 minPos;
     [SerializeField] private Vector2 maxPos;
+    [Networked] private Vector3 spawnPos { get; set; }
 
     private void Start()
     {
@@ -30,7 +31,7 @@ public class Spawner : MonoBehaviour
             {
                 Debug.Log($"Spawning enemy... (AllEnemies: {allEnemies}, CurrentEnemies: {currentEnemies})");
 
-                Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(minPos.x, maxPos.x), 50f, UnityEngine.Random.Range(minPos.y, maxPos.y));
+                spawnPos = new Vector3(UnityEngine.Random.Range(minPos.x, maxPos.x), 50f, UnityEngine.Random.Range(minPos.y, maxPos.y));
 
                 if (runner.IsServer)
                 {
