@@ -121,6 +121,7 @@ GameObject:
   - component: {fileID: 8956414134618118733}
   - component: {fileID: 5678214442470856291}
   - component: {fileID: 3409751202380119717}
+  - component: {fileID: 2111706830860033893}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Player
@@ -208,7 +209,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkTransform: {fileID: 0}
   cameraTransform: {fileID: 3029040312286188927}
-  enemy: {fileID: 4124419684439804235, guid: 4b96688b6cb2a3848b6912e52381dcd4, type: 3}
   _playerPosition: {x: 0, y: 0, z: 0}
   _playerQuaterion: {x: 0, y: 0, z: 0, w: 0}
 --- !u!65 &8956414134618118733
@@ -277,4 +277,21 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2338672167028906882}
+  - {fileID: 2111706830860033893}
   - {fileID: 1110106483382620300}
+--- !u!114 &2111706830860033893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6732750448170307664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 1
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0

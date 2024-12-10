@@ -11,7 +11,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner _runner;
     [SerializeField] private GameObject hostMenu;
     public GameObject playerPrefab;
- 
+    [Networked] private Vector3 spawnPosition { get; set; }
+
     public async void Host()
     {
         hostMenu.SetActive(false);
@@ -75,14 +76,15 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSceneLoadStart(NetworkRunner runner) { }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        if (runner.IsServer || runner.LocalPlayer == player)
+        if (runner.IsServer)
         {
-            var playerObject = runner.Spawn(playerPrefab, new Vector3(0, 5, 0), Quaternion.identity, player);
-            
-            Player playerElement = playerObject.GetComponent<Player>();
+            spawnPosition = new Vector3(UnityEngine.Random.Range(-5, 5), 10, UnityEngine.Random.Range(-5, 5));
+            var playerObject = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+            Debug.Log($"Player spawned at {spawnPosition} (Host: {runner.IsServer}, PlayerRef: {player})");
 
             if (player == runner.LocalPlayer)
             {
+                Player playerElement = playerObject.GetComponent<Player>();
                 Camera.main.GetComponent<PlayerCamera>().target = playerObject.transform;
             }
         }
