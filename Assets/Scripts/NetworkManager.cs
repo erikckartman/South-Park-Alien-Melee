@@ -13,6 +13,10 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public GameObject playerPrefab;
     [Networked] private Vector3 spawnPosition { get; set; }
 
+    private void Awake()
+    {
+        playerPrefab = MainMenu.playerPrefab; 
+    }
     public async void Host()
     {
         hostMenu.SetActive(false);
