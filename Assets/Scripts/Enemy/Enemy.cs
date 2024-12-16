@@ -6,6 +6,9 @@ using UnityEngine.AI;
 
 public class Enemy : NetworkBehaviour
 {
+    [Networked] private int health { get; set; }
+    private int maxHealth = 100;
+
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private bool canGo = false;
     private Transform playerTransform;
@@ -20,6 +23,8 @@ public class Enemy : NetworkBehaviour
 
     public void Start()
     {
+        health = maxHealth;
+
         if (Runner.IsServer)
         {
             agent.enabled = false;
@@ -34,6 +39,27 @@ public class Enemy : NetworkBehaviour
             targetPosition = EnemyPosition;
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 5);
         }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (Object.HasStateAuthority)
+        {
+            health -= damage;
+            Debug.Log($"Enemy took {damage} damage. Remaining health: {health}");
+        } 
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Enemy died!");
+
+        Runner.Despawn(Object);
     }
 
     public override void FixedUpdateNetwork()
