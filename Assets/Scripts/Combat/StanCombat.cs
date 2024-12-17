@@ -14,6 +14,9 @@ public class StanCombat : NetworkBehaviour
     private int health = 100;
     private int power = 0;
 
+    [SerializeField] private ParticleSystem vorming;
+    private int vormingDamage = 75;
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
@@ -96,6 +99,22 @@ public class StanCombat : NetworkBehaviour
 
     private void Special()
     {
-        Debug.Log("Special");       
+        Debug.Log("Special");
+        power = 0;
+        powerbar.value = power;
+
+        vorming.Play();
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 30f, enemyLayer);
+
+        if (hitEnemies.Length > 0)
+        {
+            foreach (Collider enemy in hitEnemies)
+            {
+                if (enemy.TryGetComponent<NetworkObject>(out var networkObject))
+                {
+                    InflictDamageRpc(networkObject.Id, vormingDamage);
+                }
+            }
+        }
     }
 }
