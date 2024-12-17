@@ -2,13 +2,17 @@ using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class KyleCombat : NetworkBehaviour
 {
-    private float attackRange = 100f;
-    private int attackDamage = 100;
+    private float attackRange = 2f;
+    private int attackDamage = 20;
     [SerializeField] private LayerMask enemyLayer;
-
+    [SerializeField] private Slider healthbar;
+    [SerializeField] private Slider powerbar;
+    private int health = 100;
+    private int power = 0;
 
     private void Update()
     {
@@ -17,7 +21,7 @@ public class KyleCombat : NetworkBehaviour
             Punch();
         }
 
-        if (Input.GetMouseButtonDown(1) && Object.HasInputAuthority)
+        if (Input.GetMouseButtonDown(1) && Object.HasInputAuthority && power >= 100)
         {
             Special();
         }
@@ -57,11 +61,31 @@ public class KyleCombat : NetworkBehaviour
             if (healthComponent != null)
             {
                 healthComponent.TakeDamage(damage);
+
+                if (power + 10 <= 100)
+                {
+                    power += 10;
+                }
+                else
+                {
+                    power = 100;
+                }
+                powerbar.value = power;
+
                 Debug.Log($"Inflicted {damage} damage to {enemyId}");
             }
             else
             {
                 Debug.LogWarning("Health component not found on enemy.");
+            }
+
+            Vector3 forceDirection = enemy.transform.position - transform.position;
+
+            var rb = enemy.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                forceDirection.y = 1.0f;
+                rb.AddForce(forceDirection.normalized * 3f, ForceMode.Impulse);
             }
         }
         else

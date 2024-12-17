@@ -10,12 +10,12 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     private NetworkRunner _runner;
     [SerializeField] private GameObject hostMenu;
-    public GameObject playerPrefab;
+    [SerializeField] private GameObject playerPrefab;
     [Networked] private Vector3 spawnPosition { get; set; }
 
     private void Awake()
     {
-        playerPrefab = MainMenu.playerPrefab; 
+        //playerPrefab = MainMenu.playerPrefab; 
     }
     public async void Host()
     {

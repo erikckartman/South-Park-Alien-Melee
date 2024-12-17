@@ -1241,7 +1241,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &504685821
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1481,7 +1481,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &872453410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1714,9 +1714,9 @@ MonoBehaviour:
   characterSelectCanvas: {fileID: 872453409}
   selectedCharacter:
   - {fileID: 6732750448170307664, guid: 8a089453dc6859c4d86659f4055101ea, type: 3}
-  - {fileID: 6732750448170307664, guid: 8a089453dc6859c4d86659f4055101ea, type: 3}
-  - {fileID: 6732750448170307664, guid: 8a089453dc6859c4d86659f4055101ea, type: 3}
-  - {fileID: 6732750448170307664, guid: 8a089453dc6859c4d86659f4055101ea, type: 3}
+  - {fileID: 6732750448170307664, guid: ead9dd040e37450439da1e3594cb5aa7, type: 3}
+  - {fileID: 6732750448170307664, guid: 4ffcea33bef09104f9868acfc4d093f0, type: 3}
+  - {fileID: 6732750448170307664, guid: 515d92b0f122e6b45a668dbbddaaa000, type: 3}
 --- !u!1 &916322854
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,7 +27,7 @@ public class Spawner : MonoBehaviour
     {
         if(runner != null)
         {
-            if (runner.IsServer && allEnemies > 0 && currentEnemies < 10 && canSpawnEnemies)
+            if (runner.IsServer && allEnemies > 0 && currentEnemies < 5 && canSpawnEnemies)
             {
                 Debug.Log($"Spawning enemy... (AllEnemies: {allEnemies}, CurrentEnemies: {currentEnemies})");
 
