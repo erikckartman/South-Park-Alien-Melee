@@ -1,8 +1,9 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KennyCombat : MonoBehaviour
+public class KennyCombat : NetworkBehaviour
 {
     private float attackRange = 100f;
     private int attackDamage = 100;

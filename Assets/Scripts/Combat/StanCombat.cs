@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class StanCombat : NetworkBehaviour
 {
-    private float attackRange = 100f;
-    private int attackDamage = 100;
+    private float attackRange = 2f;
+    private int attackDamage = 20;
     [SerializeField] private LayerMask enemyLayer;
+
+    
     
 
     private void Update()
@@ -63,6 +65,15 @@ public class StanCombat : NetworkBehaviour
             {
                 Debug.LogWarning("Health component not found on enemy.");
             }
+
+            //Vector3 forceDirection = (enemy.transform.position - transform.position).normalized;
+
+            //var rb = enemy.GetComponent<Rigidbody>();
+            //if (rb != null)
+            //{
+            //    Vector3 force = forceDirection.normalized * 5f;
+            //    rb.AddForce(force, ForceMode.Impulse);
+            //}
         }
         else
         {

@@ -1,8 +1,9 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KyleCombat : MonoBehaviour
+public class KyleCombat : NetworkBehaviour
 {
     private float attackRange = 100f;
     private int attackDamage = 100;
