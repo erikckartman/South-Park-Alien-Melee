@@ -14,8 +14,8 @@ public class StanCombat : NetworkBehaviour
     private int health = 100;
     private int power = 0;
 
-    [SerializeField] private ParticleSystem vorming;
-    private int vormingDamage = 75;
+    [SerializeField] private ParticleSystem vomit;
+    private int vomitDamage = 75;
 
     private void Update()
     {
@@ -103,7 +103,7 @@ public class StanCombat : NetworkBehaviour
         power = 0;
         powerbar.value = power;
 
-        vorming.Play();
+        VomitEffectRpc();
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 30f, enemyLayer);
 
         if (hitEnemies.Length > 0)
@@ -112,9 +112,15 @@ public class StanCombat : NetworkBehaviour
             {
                 if (enemy.TryGetComponent<NetworkObject>(out var networkObject))
                 {
-                    InflictDamageRpc(networkObject.Id, vormingDamage);
+                    InflictDamageRpc(networkObject.Id, vomitDamage);
                 }
             }
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void VomitEffectRpc()
+    {
+        vomit.Play();
     }
 }

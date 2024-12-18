@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 558272520313480952}
   - component: {fileID: 6527206084859889357}
   m_Layer: 0
-  m_Name: Vorming
+  m_Name: Vomit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5506,7 +5506,7 @@ MonoBehaviour:
     m_Bits: 8
   healthbar: {fileID: 4362097095367731128}
   powerbar: {fileID: 208927276128399700}
-  vorming: {fileID: 558272520313480952}
+  vomit: {fileID: 558272520313480952}
 --- !u!114 &2338672167028906882
 MonoBehaviour:
   m_ObjectHideFlags: 0

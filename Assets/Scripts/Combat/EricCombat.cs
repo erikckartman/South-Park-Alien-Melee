@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,11 +8,19 @@ public class EricCombat : NetworkBehaviour
 {
     private float attackRange = 2f;
     private int attackDamage = 20;
+
+    [Header("General stuff")]
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private Slider healthbar;
     [SerializeField] private Slider powerbar;
     private int health = 100;
     private int power = 0;
+
+    [Header("Special attack parametrs")]
+    [SerializeField] private LineRenderer lightningRenderer;
+    private GameObject target;
+    [SerializeField] private AudioSource swearingSound;
+    private float lightningDuration = 0.5f;
 
     private void Update()
     {
@@ -96,6 +104,73 @@ public class EricCombat : NetworkBehaviour
 
     private void Special()
     {
-        Debug.Log("Special");
+        //power = 0;
+        powerbar.value = power;
+        FindClosestTarget();
+        if (target != null)
+        {
+            RPC_TriggerLightning();
+        }
+        else
+        {
+            Debug.Log($"Targer is {target}");
+        }     
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_TriggerLightning()
+    {
+        StartCoroutine(PlayLightning());
+
+        var enemyHealth = target.GetComponent<Enemy>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.TakeDamage(100);
+        }
+    }
+
+    private System.Collections.IEnumerator PlayLightning()
+    {
+        swearingSound.Play();
+
+        Vector3 start = transform.position; 
+        Vector3 end = target.transform.position;
+
+        lightningRenderer.positionCount = 10; 
+        for (int i = 0; i < lightningRenderer.positionCount; i++)
+        {
+            float t = i / (float)(lightningRenderer.positionCount - 1);
+            Vector3 point = Vector3.Lerp(start, end, t);
+            point += new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), 0);
+            lightningRenderer.SetPosition(i, point);
+        }
+
+        lightningRenderer.enabled = true;
+
+        yield return new WaitForSeconds(lightningDuration);
+
+        lightningRenderer.enabled = false;
+    }
+
+    private void FindClosestTarget()
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 60f, enemyLayer);
+        float closestDistance = Mathf.Infinity;
+        GameObject closestTarget = null;
+
+        foreach (Collider col in hitColliders)
+        {
+            Vector3 directionToTarget = (col.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, directionToTarget);
+
+            float distance = Vector3.Distance(transform.position, col.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = col.gameObject;
+            }
+        }
+
+        target = closestTarget;
     }
 }
