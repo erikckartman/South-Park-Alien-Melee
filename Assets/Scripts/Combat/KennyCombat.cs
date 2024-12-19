@@ -2,6 +2,7 @@ using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class KennyCombat : NetworkBehaviour
@@ -13,7 +14,7 @@ public class KennyCombat : NetworkBehaviour
     [SerializeField] private Slider powerbar;
     private int health = 100;
     private int power = 0;
-
+    private bool isAttacking = false;
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
@@ -31,6 +32,7 @@ public class KennyCombat : NetworkBehaviour
     {
         if (Object.HasInputAuthority)
         {
+            isAttacking = true;
             Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
 
             if (hitEnemies.Length > 0)
@@ -45,6 +47,7 @@ public class KennyCombat : NetworkBehaviour
             }
             else
             {
+                isAttacking = false;
                 Debug.Log($"{hitEnemies} is null");
             }
         }
@@ -71,7 +74,7 @@ public class KennyCombat : NetworkBehaviour
                     power = 100;
                 }
                 powerbar.value = power;
-
+                isAttacking = false;
                 Debug.Log($"Inflicted {damage} damage to {enemyId}");
             }
             else
@@ -99,7 +102,7 @@ public class KennyCombat : NetworkBehaviour
         power = 0;
         powerbar.value = power;
 
-        if(health + 20 <= 100)
+        if(health + 40 <= 100)
         {
             health += 20;
         }
@@ -108,5 +111,30 @@ public class KennyCombat : NetworkBehaviour
             health = 100;
         }
         healthbar.value = health;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == enemyLayer && !isAttacking)
+        {
+            TakeDamage(15);
+        }
+    }
+
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
+        healthbar.value = health;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log($"Kenny died");
+        Runner.Despawn(Object);
+        SceneManager.LoadScene("LooseScreen");
     }
 }

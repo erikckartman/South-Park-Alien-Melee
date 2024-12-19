@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EricCombat : NetworkBehaviour
@@ -22,6 +23,8 @@ public class EricCombat : NetworkBehaviour
     [SerializeField] private AudioSource swearingSound;
     private float lightningDuration = 0.5f;
 
+    private bool isAttacking;
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
@@ -39,6 +42,7 @@ public class EricCombat : NetworkBehaviour
     {
         if (Object.HasInputAuthority)
         {
+            isAttacking = true;
             Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
 
             if (hitEnemies.Length > 0)
@@ -53,6 +57,7 @@ public class EricCombat : NetworkBehaviour
             }
             else
             {
+                isAttacking = false;
                 Debug.Log($"{hitEnemies} is null");
             }
         }
@@ -79,7 +84,7 @@ public class EricCombat : NetworkBehaviour
                     power = 100;
                 }
                 powerbar.value = power;
-
+                isAttacking = false;
                 Debug.Log($"Inflicted {damage} damage to {enemyId}");
             }
             else
@@ -172,5 +177,30 @@ public class EricCombat : NetworkBehaviour
         }
 
         target = closestTarget;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == enemyLayer && !isAttacking)
+        {
+            TakeDamage(15);
+        }
+    }
+
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
+        healthbar.value = health;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log($"Kyle died");
+        Runner.Despawn(Object);
+        SceneManager.LoadScene("LooseScreen");
     }
 }

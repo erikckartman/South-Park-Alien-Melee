@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class StanCombat : NetworkBehaviour
@@ -13,6 +14,7 @@ public class StanCombat : NetworkBehaviour
     [SerializeField] private Slider powerbar;
     private int health = 100;
     private int power = 0;
+    private bool isAttacking = false;
 
     [SerializeField] private ParticleSystem vomit;
     private int vomitDamage = 75;
@@ -34,6 +36,7 @@ public class StanCombat : NetworkBehaviour
     {
         if (Object.HasInputAuthority)
         {
+            isAttacking = true;
             Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
 
             if(hitEnemies.Length > 0)
@@ -48,6 +51,7 @@ public class StanCombat : NetworkBehaviour
             }
             else
             {
+                isAttacking = false;
                 Debug.Log($"{hitEnemies} is null");
             }
         }        
@@ -75,6 +79,7 @@ public class StanCombat : NetworkBehaviour
                 }                
                 powerbar.value = power;
 
+                isAttacking = false;
                 Debug.Log($"Inflicted {damage} damage to {enemyId}");
             }
             else
@@ -116,6 +121,31 @@ public class StanCombat : NetworkBehaviour
                 }
             }
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == enemyLayer && !isAttacking)
+        {
+            TakeDamage(15);
+        }
+    }
+
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
+        healthbar.value = health;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log($"Stan died");
+        Runner.Despawn(Object);
+        SceneManager.LoadScene("LooseScreen");
     }
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]

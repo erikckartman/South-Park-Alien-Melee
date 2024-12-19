@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class KyleCombat : NetworkBehaviour
@@ -24,6 +25,7 @@ public class KyleCombat : NetworkBehaviour
     [Networked] private NetworkObject currentIke { get; set; }
     [Networked] private Vector3 IkeVelocity { get; set; }
     [Networked] private Vector3 IkeAngularVelocity { get; set; }
+    private bool isAttacking = false;
 
     private void Start()
     {
@@ -64,6 +66,7 @@ public class KyleCombat : NetworkBehaviour
     {
         if (Object.HasInputAuthority)
         {
+            isAttacking = true;
             Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange, enemyLayer);
 
             if (hitEnemies.Length > 0)
@@ -78,6 +81,7 @@ public class KyleCombat : NetworkBehaviour
             }
             else
             {
+                isAttacking = false;
                 Debug.Log($"{hitEnemies} is null");
             }
         }
@@ -104,7 +108,7 @@ public class KyleCombat : NetworkBehaviour
                     power = 100;
                 }
                 powerbar.value = power;
-
+                isAttacking = false;
                 Debug.Log($"Inflicted {damage} damage to {enemyId}");
             }
             else
@@ -152,5 +156,30 @@ public class KyleCombat : NetworkBehaviour
                 rb.AddTorque(new Vector3(-1f, 1f, 0f) * spinForce, ForceMode.Impulse);
             }
         });
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == enemyLayer && !isAttacking)
+        {
+            TakeDamage(15);
+        }
+    }
+
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
+        healthbar.value = health;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log($"Kyle died");
+        Runner.Despawn(Object);
+        SceneManager.LoadScene("LooseScreen");
     }
 }

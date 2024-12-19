@@ -34,4 +34,9 @@ public class MainMenu : MonoBehaviour
     {
         playerPrefab = selectedCharacter[choice];
     }
+
+    public void GoToMenuScene()
+    {
+        SceneManager.LoadScene("Menu");
+    }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class Spawner : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class Spawner : MonoBehaviour
 
     [SerializeField] private GameObject enemyPrefab;
     private float spawnInterval = 5f;
-    private int currentEnemies = 0;
+    [HideInInspector] public int currentEnemies = 0;
     private int allEnemies = 50;
 
     [SerializeField] private Vector2 minPos;
@@ -52,6 +53,10 @@ public class Spawner : MonoBehaviour
             {
                 Debug.Log("Spawn conditions not met.");
             }
+        }
+        else if(allEnemies <= 0 && currentEnemies <= 0)
+        {
+            SceneManager.LoadScene("WinScreen");
         }
         else
         {

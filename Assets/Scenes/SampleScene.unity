@@ -526,6 +526,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runner: {fileID: 463678521}
   enemyPrefab: {fileID: 4124419684439804235, guid: 4b96688b6cb2a3848b6912e52381dcd4, type: 3}
+  currentEnemies: 0
   minPos: {x: -56, y: -83}
   maxPos: {x: 56, y: 83}
 --- !u!114 &387656464
@@ -1146,7 +1147,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1008011890
 RectTransform:
   m_ObjectHideFlags: 0

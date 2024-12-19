@@ -15,11 +15,16 @@ public class Enemy : NetworkBehaviour
     private float detectionRange = 10f;
     private float rotationSpeed = 5f;
     public Player[] players;
-
+    private Spawner spawner;
     [Networked] private Vector3 EnemyPosition { get; set; }
     [Networked] private Vector3 EnemyVelocity { get; set; }
     [Networked] private Vector3 TargedPosition { get; set; }
     private Vector3 targetPosition;
+
+    private void Awake()
+    {
+        spawner = FindObjectOfType<Spawner>();
+    }
 
     public void Start()
     {
@@ -58,7 +63,7 @@ public class Enemy : NetworkBehaviour
     private void Die()
     {
         Debug.Log("Enemy died!");
-
+        spawner.currentEnemies--;
         Runner.Despawn(Object);
     }
 
