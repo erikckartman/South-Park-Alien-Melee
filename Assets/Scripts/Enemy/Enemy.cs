@@ -32,7 +32,7 @@ public class Enemy : NetworkBehaviour
         }
     }
 
-    public void Update()
+    public void FixedUpdate()
     {
         if (!Object.HasStateAuthority)
         {

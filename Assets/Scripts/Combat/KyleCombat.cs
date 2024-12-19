@@ -12,7 +12,7 @@ public class KyleCombat : NetworkBehaviour
     [SerializeField] private Slider healthbar;
     [SerializeField] private Slider powerbar;
     private int health = 100;
-    private int power = 0;
+    private int power = 100;
 
     [Header("Ike")]
     private float launchForce = 15f;
@@ -22,17 +22,41 @@ public class KyleCombat : NetworkBehaviour
     [SerializeField] private GameObject ikePrefab;
     [SerializeField] private Transform spawnPoint;
     [Networked] private NetworkObject currentIke { get; set; }
+    [Networked] private Vector3 IkeVelocity { get; set; }
+    [Networked] private Vector3 IkeAngularVelocity { get; set; }
 
+    private void Start()
+    {
+        powerbar.value = power;
+    }
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
         {
             Punch();
         }
-
         if (Input.GetMouseButtonDown(1) && Object.HasInputAuthority && power >= 100)
         {
             Special();
+        }
+
+    }
+
+    private void FixedUpdate()
+    {
+        if (currentIke != null && !Object.HasInputAuthority)
+        {
+            currentIke.transform.position = Vector3.Lerp(
+                currentIke.transform.position,
+                currentIke.transform.position + IkeVelocity * Time.fixedDeltaTime,
+                0.1f
+            );
+
+            currentIke.transform.rotation = Quaternion.Lerp(
+                currentIke.transform.rotation,
+                Quaternion.Euler(IkeAngularVelocity * Time.fixedDeltaTime),
+                0.1f
+            );
         }
     }
 
@@ -125,7 +149,7 @@ public class KyleCombat : NetworkBehaviour
             {
                 Vector3 launchDirection = spawnPoint.forward + Vector3.up * upwardForce;
                 rb.AddForce(launchDirection.normalized * launchForce, ForceMode.Impulse);
-                rb.AddTorque(new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * spinForce, ForceMode.Impulse);
+                rb.AddTorque(new Vector3(-1f, 1f, 0f) * spinForce, ForceMode.Impulse);
             }
         });
     }

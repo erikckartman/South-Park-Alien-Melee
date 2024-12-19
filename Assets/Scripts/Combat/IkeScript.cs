@@ -6,27 +6,35 @@ using Fusion;
 
 public class IkeScript : NetworkBehaviour
 {
-    private float lifeTime = 5f;
+    private TickTimer lifeTime;
 
     public override void Spawned()
     {
-        Invoke(nameof(DestroyIkeRpc), lifeTime);
+        if (Object.HasStateAuthority)
+        {
+            lifeTime = TickTimer.CreateFromSeconds(Runner, 5f);
+        }
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void DestroyIkeRpc()
+    public override void FixedUpdateNetwork()
     {
-        if (Runner.IsServer)
+        if (Object.HasStateAuthority && lifeTime.Expired(Runner))
         {
             Runner.Despawn(Object);
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+        private void OnCollisionEnter(Collision collision)
     {
+        if (!Object.HasStateAuthority) return;
+
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            collision.gameObject.GetComponent<Enemy>().TakeDamage(100);
+            var enemy = collision.gameObject.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(100);
+            }
         }
     }
 }
