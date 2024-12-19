@@ -421,6 +421,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 451512754378537518}
+--- !u!1 &3819685466347975170
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7755896150067721617}
+  m_Layer: 0
+  m_Name: IkeSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7755896150067721617
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3819685466347975170}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.035, z: 0.518}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 451512754378537518}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5972322019985151783
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,6 +579,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6194023624690186829}
+  - {fileID: 7755896150067721617}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2085591750561233535
@@ -718,6 +750,8 @@ MonoBehaviour:
     m_Bits: 8
   healthbar: {fileID: 4362097095367731128}
   powerbar: {fileID: 208927276128399700}
+  ikePrefab: {fileID: 5393360735472817633, guid: 0cc74c0164045474a9495782a36b490b, type: 3}
+  spawnPoint: {fileID: 7755896150067721617}
 --- !u!1 &7077990597056229183
 GameObject:
   m_ObjectHideFlags: 0

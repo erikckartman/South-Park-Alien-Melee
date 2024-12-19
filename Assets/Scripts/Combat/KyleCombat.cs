@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +13,15 @@ public class KyleCombat : NetworkBehaviour
     [SerializeField] private Slider powerbar;
     private int health = 100;
     private int power = 0;
+
+    [Header("Ike")]
+    private float launchForce = 15f;
+    private float spinForce = 10f;
+    private float upwardForce = 2f;
+
+    [SerializeField] private GameObject ikePrefab;
+    [SerializeField] private Transform spawnPoint;
+    [Networked] private NetworkObject currentIke { get; set; }
 
     private void Update()
     {
@@ -97,5 +106,27 @@ public class KyleCombat : NetworkBehaviour
     private void Special()
     {
         Debug.Log("Special");
+        LaunchIke();
+    }
+
+    public void LaunchIke()
+    {
+        if (currentIke != null)
+        {
+            Debug.LogWarning("Ike already launched!");
+            return;
+        }
+
+        Runner.Spawn(ikePrefab, spawnPoint.position, spawnPoint.rotation, Object.InputAuthority, (runner, obj) =>
+        {
+            currentIke = obj.GetComponent<NetworkObject>();
+            Rigidbody rb = obj.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                Vector3 launchDirection = spawnPoint.forward + Vector3.up * upwardForce;
+                rb.AddForce(launchDirection.normalized * launchForce, ForceMode.Impulse);
+                rb.AddTorque(new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * spinForce, ForceMode.Impulse);
+            }
+        });
     }
 }

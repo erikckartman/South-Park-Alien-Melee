@@ -474,7 +474,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hostMenu: {fileID: 1376646556}
-  playerPrefab: {fileID: 6732750448170307664, guid: 4ffcea33bef09104f9868acfc4d093f0, type: 3}
+  playerPrefab: {fileID: 6732750448170307664, guid: ead9dd040e37450439da1e3594cb5aa7, type: 3}
 --- !u!114 &463678521
 MonoBehaviour:
   m_ObjectHideFlags: 0
