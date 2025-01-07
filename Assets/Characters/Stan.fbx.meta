@@ -3,12 +3,7 @@ guid: 33177a2d7eb0b0749b78df5e5370d667
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: stan
-    second: {fileID: 2800000, guid: cee959a05dbf518488c2e89030ba1287, type: 3}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
