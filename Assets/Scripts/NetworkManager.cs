@@ -5,9 +5,11 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using static Player;
+using UnityEngine.UI;
 
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
+    [SerializeField] private InputField sessionText;
     private NetworkRunner _runner;
     [SerializeField] private GameObject hostMenu;
     [SerializeField] private GameObject playerPrefab;
@@ -15,7 +17,10 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     private void Awake()
     {
-        //playerPrefab = MainMenu.playerPrefab; 
+        if(MainMenu.playerPrefab != null)
+        {
+            playerPrefab = MainMenu.playerPrefab;
+        } 
     }
     public async void Host()
     {
@@ -28,7 +33,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         var result = await _runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Host,
-            SessionName = "Coon And Friends",
+            SessionName = sessionText.text,
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
         });
     }
@@ -43,7 +48,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         var result = await _runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Client,
-            SessionName = "Coon And Friends",
+            SessionName = sessionText.text,
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
         });
     }
