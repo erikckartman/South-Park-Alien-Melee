@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -14,11 +15,17 @@ public class KennyCombat : NetworkBehaviour
     [SerializeField] private Slider powerbar;
     private int health = 100;
     private int power = 0;
+    private float forwardForce = 15f;
+    private float upwardForce = 5f;
+    private float dashDuration = 0.2f;
     private bool isAttacking = false;
+    private List<Collider> damagedEnemies = new List<Collider>();
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
         {
+            StartCoroutine(Dash());
             Punch();
         }
 
@@ -26,6 +33,8 @@ public class KennyCombat : NetworkBehaviour
         {
             Special();
         }
+
+        GetDamage(15);
     }
 
     private void Punch()
@@ -50,6 +59,22 @@ public class KennyCombat : NetworkBehaviour
                 isAttacking = false;
                 Debug.Log($"{hitEnemies} is null");
             }
+        }
+    }
+
+    private IEnumerator Dash()
+    {
+        isAttacking = true;
+        float startTime = Time.time;
+        while (Time.time < startTime + dashDuration)
+        {
+            transform.Translate(Vector3.forward * forwardForce * Time.deltaTime);
+            transform.Translate(Vector3.up * upwardForce * Time.deltaTime);
+            yield return null;
+        }
+        if(Time.time >= startTime + dashDuration)
+        {
+            isAttacking = false;
         }
     }
 
@@ -102,7 +127,7 @@ public class KennyCombat : NetworkBehaviour
         power = 0;
         powerbar.value = power;
 
-        if(health + 40 <= 100)
+        if(health + 20 <= 100)
         {
             health += 20;
         }
@@ -136,5 +161,44 @@ public class KennyCombat : NetworkBehaviour
         Debug.Log($"Kenny died");
         Runner.Despawn(Object);
         SceneManager.LoadScene("LooseScreen");
+    }
+
+    private void GetDamage(int damage)
+    {
+        if (Object.HasInputAuthority && !isAttacking)
+        {
+            Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 1f, enemyLayer);
+
+            if (hitEnemies.Length > 0)
+            {
+                foreach (Collider enemy in hitEnemies)
+                {
+                    if (!damagedEnemies.Contains(enemy))
+                    {
+                        damagedEnemies.Add(enemy);
+
+                        Vector3 forceDirection = transform.position - enemy.transform.position;
+                        var rb = GetComponent<Rigidbody>();                    
+                        forceDirection.y = 0f;
+                        rb.AddForce(forceDirection.normalized * 5f, ForceMode.Impulse);
+                        
+                        health -= damage;
+                        healthbar.value = health;
+
+                        if (health <= 0)
+                        {
+                            Die();
+                        }
+                    }
+                }
+                StartCoroutine(ClearDamagedEnemies());
+            }
+        }
+    }
+
+    private IEnumerator ClearDamagedEnemies()
+    {
+        yield return new WaitForSeconds(1.0f);
+        damagedEnemies.Clear(); 
     }
 }

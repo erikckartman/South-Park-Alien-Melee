@@ -23,12 +23,17 @@ public class EricCombat : NetworkBehaviour
     [SerializeField] private AudioSource swearingSound;
     private float lightningDuration = 0.5f;
 
-    private bool isAttacking;
+    private float forwardForce = 15f;
+    private float upwardForce = 5f;
+    private float dashDuration = 0.2f;
+    private bool isAttacking = false;
+    private List<Collider> damagedEnemies = new List<Collider>();
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
         {
+            StartCoroutine(Dash());
             Punch();
         }
 
@@ -36,6 +41,8 @@ public class EricCombat : NetworkBehaviour
         {
             Special();
         }
+
+        GetDamage(15);
     }
 
     private void Punch()
@@ -60,6 +67,22 @@ public class EricCombat : NetworkBehaviour
                 isAttacking = false;
                 Debug.Log($"{hitEnemies} is null");
             }
+        }
+    }
+
+    private IEnumerator Dash()
+    {
+        isAttacking = true;
+        float startTime = Time.time;
+        while (Time.time < startTime + dashDuration)
+        {
+            transform.Translate(Vector3.forward * forwardForce * Time.deltaTime);
+            transform.Translate(Vector3.up * upwardForce * Time.deltaTime);
+            yield return null;
+        }
+        if(Time.time >= startTime + dashDuration)
+        {
+            isAttacking = false;
         }
     }
 
@@ -109,7 +132,7 @@ public class EricCombat : NetworkBehaviour
 
     private void Special()
     {
-        //power = 0;
+        power = 0;
         powerbar.value = power;
         FindClosestTarget();
         if (target != null)
@@ -195,6 +218,45 @@ public class EricCombat : NetworkBehaviour
         {
             Die();
         }
+    }
+
+    private void GetDamage(int damage)
+    {
+        if (Object.HasInputAuthority && !isAttacking)
+        {
+            Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 1f, enemyLayer);
+
+            if (hitEnemies.Length > 0)
+            {
+                foreach (Collider enemy in hitEnemies)
+                {
+                    if (!damagedEnemies.Contains(enemy))
+                    {
+                        damagedEnemies.Add(enemy);
+
+                        Vector3 forceDirection = transform.position - enemy.transform.position;
+                        var rb = GetComponent<Rigidbody>();                    
+                        forceDirection.y = 0f;
+                        rb.AddForce(forceDirection.normalized * 5f, ForceMode.Impulse);
+                        
+                        health -= damage;
+                        healthbar.value = health;
+
+                        if (health <= 0)
+                        {
+                            Die();
+                        }
+                    }
+                }
+                StartCoroutine(ClearDamagedEnemies());
+            }
+        }
+    }
+
+    private IEnumerator ClearDamagedEnemies()
+    {
+        yield return new WaitForSeconds(1.0f);
+        damagedEnemies.Clear(); 
     }
 
     private void Die()

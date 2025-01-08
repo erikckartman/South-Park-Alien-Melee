@@ -1,5 +1,6 @@
 ﻿using Fusion;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,6 +21,8 @@ public class Enemy : NetworkBehaviour
     [Networked] private Vector3 EnemyVelocity { get; set; }
     [Networked] private Vector3 TargedPosition { get; set; }
     private Vector3 targetPosition;
+    [SerializeField] private GameObject mesh;
+    private Vector3 meshScale;
 
     private void Awake()
     {
@@ -35,6 +38,8 @@ public class Enemy : NetworkBehaviour
             agent.enabled = false;
             SearchForPlayers();
         }
+
+        InvokeRepeating("Animation", 0, 1);
     }
 
     public void FixedUpdate()
@@ -60,10 +65,19 @@ public class Enemy : NetworkBehaviour
         }
     }
 
+    private void Animation(){
+        if(health <= 0) return;
+
+        meshScale = mesh.transform.localScale;
+        meshScale.x *= -1;
+        mesh.transform.localScale = meshScale;
+    }
+
     private void Die()
     {
         Debug.Log("Enemy died!");
         spawner.currentEnemies--;
+        spawner.UpdateUI();
         Runner.Despawn(Object);
     }
 

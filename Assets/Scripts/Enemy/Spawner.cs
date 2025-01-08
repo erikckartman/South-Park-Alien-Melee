@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class Spawner : MonoBehaviour
 {
@@ -13,15 +14,26 @@ public class Spawner : MonoBehaviour
     [SerializeField] private GameObject enemyPrefab;
     private float spawnInterval = 5f;
     [HideInInspector] public int currentEnemies = 0;
-    private int allEnemies = 50;
+    [HideInInspector] public int allEnemies = 50;
 
     [SerializeField] private Vector2 minPos;
     [SerializeField] private Vector2 maxPos;
     [Networked] private Vector3 spawnPos { get; set; }
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI enemyCurrentText;
+    [SerializeField] private TextMeshProUGUI enemyAllText;
 
     private void Start()
     {
         InvokeRepeating("Spawn", 0, spawnInterval);
+    }
+
+    private void Update()
+    {
+        if (currentEnemies <= 0 && allEnemies <= 0)
+        {
+            SceneManager.LoadScene("WinScreen");
+        }
     }
 
     private void Spawn()
@@ -42,6 +54,7 @@ public class Spawner : MonoBehaviour
                         Debug.Log("Enemy spawned successfully!");
                         allEnemies--;
                         currentEnemies++;
+                        UpdateUI();
                     }
                     else
                     {
@@ -62,5 +75,11 @@ public class Spawner : MonoBehaviour
         {
             Debug.Log($"Runner = {runner}");
         }
+    }
+
+    public void UpdateUI()
+    {
+        enemyCurrentText.text = "Current: " + currentEnemies.ToString();
+        enemyAllText.text = "All: " + allEnemies.ToString();
     }
 }

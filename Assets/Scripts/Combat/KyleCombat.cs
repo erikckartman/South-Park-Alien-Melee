@@ -27,6 +27,11 @@ public class KyleCombat : NetworkBehaviour
     [Networked] private Vector3 IkeAngularVelocity { get; set; }
     private bool isAttacking = false;
 
+    private float forwardForce = 15f;
+    private float upwardIkeForce = 5f;
+    private float dashDuration = 0.2f;
+    private List<Collider> damagedEnemies = new List<Collider>();
+
     private void Start()
     {
         powerbar.value = power;
@@ -35,6 +40,7 @@ public class KyleCombat : NetworkBehaviour
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
         {
+            StartCoroutine(Dash());
             Punch();
         }
         if (Input.GetMouseButtonDown(1) && Object.HasInputAuthority && power >= 100)
@@ -42,6 +48,7 @@ public class KyleCombat : NetworkBehaviour
             Special();
         }
 
+        GetDamage(15);
     }
 
     private void FixedUpdate()
@@ -84,6 +91,22 @@ public class KyleCombat : NetworkBehaviour
                 isAttacking = false;
                 Debug.Log($"{hitEnemies} is null");
             }
+        }
+    }
+
+    private IEnumerator Dash()
+    {
+        isAttacking = true;
+        float startTime = Time.time;
+        while (Time.time < startTime + dashDuration)
+        {
+            transform.Translate(Vector3.forward * forwardForce * Time.deltaTime);
+            transform.Translate(Vector3.up * upwardForce * Time.deltaTime);
+            yield return null;
+        }
+        if(Time.time >= startTime + dashDuration)
+        {
+            isAttacking = false;
         }
     }
 
@@ -133,7 +156,8 @@ public class KyleCombat : NetworkBehaviour
 
     private void Special()
     {
-        Debug.Log("Special");
+        power = 0;
+        powerbar.value = power;
         LaunchIke();
     }
 
@@ -151,7 +175,7 @@ public class KyleCombat : NetworkBehaviour
             Rigidbody rb = obj.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                Vector3 launchDirection = spawnPoint.forward + Vector3.up * upwardForce;
+                Vector3 launchDirection = spawnPoint.forward + Vector3.up * upwardIkeForce;
                 rb.AddForce(launchDirection.normalized * launchForce, ForceMode.Impulse);
                 rb.AddTorque(new Vector3(-1f, 1f, 0f) * spinForce, ForceMode.Impulse);
             }
@@ -175,6 +199,46 @@ public class KyleCombat : NetworkBehaviour
             Die();
         }
     }
+
+    private void GetDamage(int damage)
+    {
+        if (Object.HasInputAuthority && !isAttacking)
+        {
+            Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 1f, enemyLayer);
+
+            if (hitEnemies.Length > 0)
+            {
+                foreach (Collider enemy in hitEnemies)
+                {
+                    if (!damagedEnemies.Contains(enemy))
+                    {
+                        damagedEnemies.Add(enemy);
+
+                        Vector3 forceDirection = transform.position - enemy.transform.position;
+                        var rb = GetComponent<Rigidbody>();                    
+                        forceDirection.y = 0f;
+                        rb.AddForce(forceDirection.normalized * 5f, ForceMode.Impulse);
+                        
+                        health -= damage;
+                        healthbar.value = health;
+
+                        if (health <= 0)
+                        {
+                            Die();
+                        }
+                    }
+                }
+                StartCoroutine(ClearDamagedEnemies());
+            }
+        }
+    }
+
+    private IEnumerator ClearDamagedEnemies()
+    {
+        yield return new WaitForSeconds(1.0f);
+        damagedEnemies.Clear(); 
+    }
+
 
     private void Die()
     {
