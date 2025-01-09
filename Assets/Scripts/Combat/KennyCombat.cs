@@ -21,6 +21,8 @@ public class KennyCombat : NetworkBehaviour
     private bool isAttacking = false;
     private List<Collider> damagedEnemies = new List<Collider>();
 
+    [SerializeField] private AudioSource punchSound;
+    [SerializeField] private AudioSource omgtkkSound;
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
@@ -48,6 +50,7 @@ public class KennyCombat : NetworkBehaviour
             {
                 foreach (Collider enemy in hitEnemies)
                 {
+                    punchSound.Play();
                     if (enemy.TryGetComponent<NetworkObject>(out var networkObject))
                     {
                         InflictDamageRpc(networkObject.Id, attackDamage);
@@ -126,6 +129,7 @@ public class KennyCombat : NetworkBehaviour
     {
         power = 0;
         powerbar.value = power;
+        omgtkkSound.Play();
 
         if(health + 20 <= 100)
         {

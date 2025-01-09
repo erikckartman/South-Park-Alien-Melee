@@ -29,6 +29,9 @@ public class EricCombat : NetworkBehaviour
     private bool isAttacking = false;
     private List<Collider> damagedEnemies = new List<Collider>();
 
+    [SerializeField] private AudioSource punchSound;
+    [SerializeField] private AudioSource thunderSound;
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
@@ -56,6 +59,7 @@ public class EricCombat : NetworkBehaviour
             {
                 foreach (Collider enemy in hitEnemies)
                 {
+                    punchSound.Play();
                     if (enemy.TryGetComponent<NetworkObject>(out var networkObject))
                     {
                         InflictDamageRpc(networkObject.Id, attackDamage);
@@ -160,6 +164,7 @@ public class EricCombat : NetworkBehaviour
     private System.Collections.IEnumerator PlayLightning()
     {
         swearingSound.Play();
+        thunderSound.Play();
 
         Vector3 start = transform.position; 
         Vector3 end = target.transform.position;
@@ -261,7 +266,7 @@ public class EricCombat : NetworkBehaviour
 
     private void Die()
     {
-        Debug.Log($"Kyle died");
+        Debug.Log($"Eric died");
         Runner.Despawn(Object);
         SceneManager.LoadScene("LooseScreen");
     }

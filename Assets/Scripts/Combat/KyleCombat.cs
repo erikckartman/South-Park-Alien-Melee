@@ -32,6 +32,8 @@ public class KyleCombat : NetworkBehaviour
     private float dashDuration = 0.2f;
     private List<Collider> damagedEnemies = new List<Collider>();
 
+    [SerializeField] private AudioSource punchSound;
+
     private void Start()
     {
         powerbar.value = power;
@@ -80,6 +82,7 @@ public class KyleCombat : NetworkBehaviour
             {
                 foreach (Collider enemy in hitEnemies)
                 {
+                    punchSound.Play();
                     if (enemy.TryGetComponent<NetworkObject>(out var networkObject))
                     {
                         InflictDamageRpc(networkObject.Id, attackDamage);

@@ -24,6 +24,8 @@ public class StanCombat : NetworkBehaviour
     private int vomitDamage = 75;
     private List<Collider> damagedEnemies = new List<Collider>();
 
+    [SerializeField] private AudioSource punchSound;
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && Object.HasInputAuthority)
@@ -51,6 +53,7 @@ public class StanCombat : NetworkBehaviour
             {
                 foreach (Collider enemy in hitEnemies)
                 {
+                    punchSound.Play();
                     if (enemy.TryGetComponent<NetworkObject>(out var networkObject))
                     {
                         InflictDamageRpc(networkObject.Id, attackDamage);
