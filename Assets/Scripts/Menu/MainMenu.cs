@@ -96,4 +96,9 @@ public class MainMenu : MonoBehaviour
         introADgd.SetActive(false);
         winScreen.SetActive(true);
     }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
 }
