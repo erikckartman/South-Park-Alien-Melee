@@ -13,7 +13,7 @@ public class Player : NetworkBehaviour
     private float jumpHeight = 0.25f;
     private float jumpDuration = 0.2f;
     private float tiltAngle = 10f;
-    private float mouseSensitivity = 2f;
+    private float mouseSensitivity = 3f;
 
     private bool isJumping = false;
     private bool tiltToLeft = true;
