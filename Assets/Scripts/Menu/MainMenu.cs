@@ -11,6 +11,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject characterSelectCanvas;
     [SerializeField] private GameObject gameIntro;
     public static GameObject playerPrefab;
+    [SerializeField] private GameObject loadingScreen;
 
     [Header("Characters prefab")]
     [SerializeField] private GameObject[] selectedCharacter;
@@ -58,6 +59,7 @@ public class MainMenu : MonoBehaviour
     {
         menuCanvas.SetActive(false);
         characterSelectCanvas.SetActive(true);
+        loadingScreen.SetActive(false);
     }
 
     public void GoToMainMenu()
@@ -69,6 +71,7 @@ public class MainMenu : MonoBehaviour
 
     public void GoToGame()
     {
+        loadingScreen.SetActive(true);
         SceneManager.LoadScene("SampleScene");
     }
 

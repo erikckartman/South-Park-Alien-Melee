@@ -13,6 +13,7 @@ public class Player : NetworkBehaviour
     private float jumpHeight = 0.25f;
     private float jumpDuration = 0.2f;
     private float tiltAngle = 10f;
+    private float mouseSensitivity = 2f;
 
     private bool isJumping = false;
     private bool tiltToLeft = true;
@@ -55,8 +56,7 @@ public class Player : NetworkBehaviour
     {
         if (GetInput(out NetworkInputData inputData))
         {
-            Vector3 moveDirection = cameraTransform.transform.forward * inputData.moveDirection.y +
-                                    cameraTransform.transform.right * inputData.moveDirection.x;
+            Vector3 moveDirection = cameraTransform.transform.forward * inputData.moveDirection.y + cameraTransform.transform.right * inputData.moveDirection.x;
 
             moveDirection.y = 0;
             moveDirection.Normalize();
@@ -116,6 +116,7 @@ public class Player : NetworkBehaviour
     public struct NetworkInputData : INetworkInput
     {
         public Vector2 moveDirection;
+        public Vector2 mouseDelta;
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -125,6 +126,10 @@ public class Player : NetworkBehaviour
             moveDirection = new Vector2(
                 Input.GetAxis("Horizontal"),
                 Input.GetAxis("Vertical")
+            ),
+            mouseDelta = new Vector2(
+                Input.GetAxis("Mouse X") * mouseSensitivity,
+                Input.GetAxis("Mouse Y") * mouseSensitivity
             )
         };
 
