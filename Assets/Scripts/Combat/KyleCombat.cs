@@ -13,7 +13,7 @@ public class KyleCombat : NetworkBehaviour
     [SerializeField] private Slider healthbar;
     [SerializeField] private Slider powerbar;
     private int health = 100;
-    private int power = 100;
+    private int power = 0;
 
     [Header("Ike")]
     private float launchForce = 15f;

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class Enemy : NetworkBehaviour
 {
@@ -48,6 +49,11 @@ public class Enemy : NetworkBehaviour
         {
             targetPosition = EnemyPosition;
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 5);
+        }
+
+        if (transform.position.y <= -5f)
+        {
+            Runner.Despawn(Object);
         }
     }
 

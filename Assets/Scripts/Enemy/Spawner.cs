@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.AI;
 
 public class Spawner : MonoBehaviour
 {
@@ -44,23 +45,32 @@ public class Spawner : MonoBehaviour
             {
                 Debug.Log($"Spawning enemy... (AllEnemies: {allEnemies}, CurrentEnemies: {currentEnemies})");
 
-                spawnPos = new Vector3(UnityEngine.Random.Range(minPos.x, maxPos.x), 50f, UnityEngine.Random.Range(minPos.y, maxPos.y));
+                Vector3 randPos = new Vector3(UnityEngine.Random.Range(minPos.x, maxPos.x), 50f, UnityEngine.Random.Range(minPos.y, maxPos.y));
 
-                if (runner.IsServer)
+                if (Physics.Raycast(randPos, Vector3.down, out RaycastHit hit, Mathf.Infinity))
                 {
-                    var enemyInstance = runner.Spawn(enemyPrefab, spawnPos, Quaternion.identity);
-                    if (enemyInstance != null)
+                    NavMeshHit navHit;
+                    if (NavMesh.SamplePosition(hit.point, out navHit, 1f, NavMesh.AllAreas))
                     {
-                        Debug.Log("Enemy spawned successfully!");
-                        allEnemies--;
-                        currentEnemies++;
-                        UpdateUI();
-                    }
-                    else
-                    {
-                        Debug.LogError("Failed to spawn enemy!");
+                        if (runner.IsServer)
+                        {
+                            spawnPos = navHit.position + Vector3.up * 2f;
+                            var enemyInstance = runner.Spawn(enemyPrefab, spawnPos, Quaternion.identity);
+                            if (enemyInstance != null)
+                            {
+                                Debug.Log("Enemy spawned successfully!");
+                                allEnemies--;
+                                currentEnemies++;
+                                UpdateUI();
+                            }
+                            else
+                            {
+                                Debug.LogError("Failed to spawn enemy!");
+                            }
+                        }
                     }
                 }
+                    
             }
             else
             {

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using Fusion;
 using System;
+using UnityEngine.SceneManagement;
 
 public class Player : NetworkBehaviour
 {
@@ -44,6 +45,12 @@ public class Player : NetworkBehaviour
 
             playerPosition = transform.position;
             playerQuaterion = transform.rotation;
+
+            if(transform.position.y <= -5f)
+            {
+                Runner.Despawn(Object);
+                SceneManager.LoadScene("LooseScreen");
+            }
         }
         else
         {

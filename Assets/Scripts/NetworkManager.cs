@@ -87,7 +87,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
-            spawnPosition = new Vector3(UnityEngine.Random.Range(-5, 5), 2, UnityEngine.Random.Range(-5, 5));
+            spawnPosition = new Vector3(UnityEngine.Random.Range(4, 14), 2, UnityEngine.Random.Range(-5, 5));
             var playerObject = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
             Debug.Log($"Player spawned at {spawnPosition} (Host: {runner.IsServer}, PlayerRef: {player})");
 
