@@ -66,6 +66,7 @@ public class MainMenu : MonoBehaviour
     {
         characterSelectCanvas.SetActive(false);
         menuCanvas.SetActive(true);
+        loadingScreen.SetActive(false);
         introAudio.Play();
     }
 

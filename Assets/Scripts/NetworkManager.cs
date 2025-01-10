@@ -6,22 +6,16 @@ using Fusion.Sockets;
 using System;
 using static Player;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private InputField sessionText;
     private NetworkRunner _runner;
     [SerializeField] private GameObject hostMenu;
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject[] playerPrefab;
     [Networked] private Vector3 spawnPosition { get; set; }
 
-    private void Awake()
-    {
-        if(MainMenu.playerPrefab != null)
-        {
-            playerPrefab = MainMenu.playerPrefab;
-        } 
-    }
     public async void Host()
     {
         hostMenu.SetActive(false);
@@ -53,7 +47,15 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         });
     }
 
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { 
+        NetworkObject playerObject = runner.GetPlayerObject(player);
+
+    if (playerObject != null)
+    {
+        runner.Despawn(playerObject);
+        Debug.Log($"Player {player} left the game. Object despawned.");
+    }
+    }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
         NetworkInputData data = new NetworkInputData
@@ -63,10 +65,13 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         input.Set(data);
     }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { 
+        SceneManager.LoadScene("Menu");
+    }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
         Debug.Log($"Disconnect: {reason}");
+        SceneManager.LoadScene("Menu");
     }
     public void OnConnectedToServer(NetworkRunner runner)
     {
@@ -87,8 +92,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
+            int randomIndex = UnityEngine.Random.Range(0, 4);
             spawnPosition = new Vector3(UnityEngine.Random.Range(4, 14), 2, UnityEngine.Random.Range(-5, 5));
-            var playerObject = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+            var playerObject = runner.Spawn(playerPrefab[randomIndex], spawnPosition, Quaternion.identity, player);
             Debug.Log($"Player spawned at {spawnPosition} (Host: {runner.IsServer}, PlayerRef: {player})");
 
             if (player == runner.LocalPlayer)
